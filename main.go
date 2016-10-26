@@ -34,11 +34,17 @@ func main() {
 	}
 	p := &httputil.ReverseProxy{
 		Director:      director,
-		FlushInterval: time.Second,
+		FlushInterval: 250 * time.Millisecond,
 	}
 	p.Transport = &http.Transport{
 		Dial: fakeDial,
 	}
 
-	log.Fatal(http.Serve(l, p))
+	mux := http.NewServeMux()
+	mux.Handle("/v1.24/events", p)
+	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		w.WriteHeader(http.StatusForbidden)
+	})
+
+	log.Fatal(http.Serve(l, mux))
 }
