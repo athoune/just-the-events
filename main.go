@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -18,7 +17,7 @@ func fakeDial(proto, addr string) (conn net.Conn, err error) {
 func main() {
 
 	path := "/tmp/just-the-events.sock"
-	os.Remove(path)
+	os.Remove(path) //Who cares if the file doesn't exist?
 	l, err := net.ListenUnix("unix", &net.UnixAddr{path, "unix"})
 	if err != nil {
 		log.Fatal(err)
@@ -28,7 +27,6 @@ func main() {
 	director := func(req *http.Request) {
 		// to make Dial work with unix URL,
 		// scheme and host have to be faked
-		fmt.Println(req)
 		req.URL.Scheme = "http"
 		req.URL.Host = "socket"
 	}
