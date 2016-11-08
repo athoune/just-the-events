@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"regexp"
 	"time"
 )
 
@@ -38,10 +40,16 @@ func main() {
 		Dial: fakeDial,
 	}
 
+	patterns := regexp.MustCompile(`/v1\.\d+/(events|version|(containers(/[0-9a-f]+)?/json))`)
+
 	mux := http.NewServeMux()
-	mux.Handle("/v1.24/events", p)
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		w.WriteHeader(http.StatusForbidden)
+		if req.Method == "GET" && patterns.MatchString(req.URL.Path) {
+			p.ServeHTTP(w, req)
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+			fmt.Println("Forbidden: ", req)
+		}
 	})
 
 	log.Fatal(http.Serve(l, mux))
