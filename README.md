@@ -14,6 +14,17 @@ Second terminal:
 
 Third terminal, do something with docker.
 
+Service
+-------
+
+A systemd service is provided
+
+    useradd --system just_the_events
+    adduser just_the_events docker
+
+just_the_events can use docker socket, anybody in just_the_events groups has readonly access to docker.
+
+
 Licence
 -------
 

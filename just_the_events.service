@@ -1,0 +1,17 @@
+[Unit]
+Description=just the events
+After=docker.socket
+
+[Service]
+User=just_the_events
+Group=just_the_events
+UMask=0117
+PermissionsStartOnly=true
+ExecStartPre=/bin/rm -f /tmp/just-the-events.sock
+ExecStart=/home/just_the_events/just-the-events
+
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
